@@ -46,7 +46,7 @@
  * @author Mark Callow
  */
 
-#if defined(_WIN32) && !defined(_UNICODE)
+#if defined(_WIN32) && defined(_UNICODE)
 // For Windows, we convert the UTF-8 path to a UTF-16 path to force using
 // the APIs that correctly handle unicode characters.
 inline std::wstring DecodeUTF8Path(std::string path) {
@@ -131,7 +131,7 @@ inline int unlinkUTF8(const std::string& path) {
         return std::u8string(s.begin(), s.end());
     }
 
-    #if defined(_WIN32) && !defined(_UNICODE)
+    #if defined(_WIN32) && defined(_UNICODE)
         // For Windows, we convert the UTF-8 path to a UTF-16 path to force using
         // the APIs that correctly handle unicode characters.
         inline std::wstring DecodeUTF8Path(std::u8string u8path) {

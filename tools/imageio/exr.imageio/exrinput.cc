@@ -14,7 +14,6 @@
 // TEXR is not defined in tinyexr.h. Current GitHub tinyexr master uses
 // assert. The version in astc-encoder must be old.
 #define TEXR_ASSERT(x) assert(x)
-#define TINYEXR_IMPLEMENTATION
 #include "tinyexr.h"
 #include <KHR/khr_df.h>
 #include "dfd.h"
@@ -84,17 +83,19 @@ void ExrInput::slurp() {
     isp->read(reinterpret_cast<char*>(exrBuffer.data()), exrByteLength);
 }
 
+const int tinyexrkEXRVersionSize = 8;
+
 void ExrInput::open(ImageSpec& newspec) {
     assert(isp != nullptr && "ImageInput not properly opened");
 
     {
-        unsigned char versionData[tinyexr::kEXRVersionSize];
-        isp->read(reinterpret_cast<char*>(versionData), tinyexr::kEXRVersionSize);
+        unsigned char versionData[tinyexrkEXRVersionSize];
+        isp->read(reinterpret_cast<char*>(versionData), tinyexrkEXRVersionSize);
         if (isp->fail())
            throwOnReadFailure();
         isp->seekg(0);
 
-        ec = ParseEXRVersionFromMemory(&version, versionData, tinyexr::kEXRVersionSize);
+        ec = ParseEXRVersionFromMemory(&version, versionData, tinyexrkEXRVersionSize);
         if (ec == TINYEXR_ERROR_INVALID_MAGIC_NUMBER)
             throw different_format();
         if (ec != TINYEXR_SUCCESS)

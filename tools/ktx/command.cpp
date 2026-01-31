@@ -5,7 +5,6 @@
 
 #include "command.h"
 #include "platform_utils.h"
-#include "version.h"
 #include "ktx.h"
 #include "sbufstream.h"
 #include <stdio.h>

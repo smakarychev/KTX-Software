@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include "stdafx.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -94,34 +93,36 @@ struct FatalError : public std::exception {
 struct Reporter {
     std::string commandName;
     std::string commandDescription;
+    std::string warnings;
+    std::string errors;
 
     template <typename... Args>
     void warning(fmt::format_string<Args...> fmt, Args&&... args) {
-        fmt::print(std::cerr, "{} warning: ", commandName);
-        fmt::print(std::cerr, fmt, std::forward<Args>(args)...);
-        fmt::print(std::cerr, "\n");
+        warnings
+            .append(fmt::format(fmt, std::forward<Args>(args)...))
+            .append("\n");
     }
 
     template <typename... Args>
     void error(fmt::format_string<Args...> fmt, Args&&... args) {
-        fmt::print(std::cerr, "{} error: ", commandName);
-        fmt::print(std::cerr, fmt, std::forward<Args>(args)...);
-        fmt::print(std::cerr, "\n");
+        errors
+            .append(fmt::format(fmt, std::forward<Args>(args)...))
+            .append("\n");
     }
 
     template <typename... Args>
     void fatal(ReturnCode return_code, fmt::format_string<Args...> fmt, Args&&... args) {
-        fmt::print(std::cerr, "{} fatal: ", commandName);
-        fmt::print(std::cerr, fmt, std::forward<Args>(args)...);
-        fmt::print(std::cerr, "\n");
+        errors
+            .append(fmt::format(fmt, std::forward<Args>(args)...))
+            .append("\n");
         throw FatalError(return_code);
     }
 
     template <typename... Args>
     void fatal_usage(fmt::format_string<Args...> fmt, Args&&... args) {
-        fmt::print(std::cerr, "{} fatal: ", commandName);
-        fmt::print(std::cerr, fmt, std::forward<Args>(args)...);
-        fmt::print(std::cerr, " See '{} --help'.\n", commandName);
+        errors
+           .append(fmt::format(fmt, std::forward<Args>(args)...))
+           .append("\n");
         throw FatalError(rc::INVALID_ARGUMENTS);
     }
 };
